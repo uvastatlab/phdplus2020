@@ -1,0 +1,276 @@
+---
+title: "Introduction to R"
+output: 
+  html_document: 
+    fig_caption: yes
+    toc: yes
+    toc_float: true
+---
+
+# Get Ready!
+
+* Before the first session, make sure you have installed or updated R, RStudio, and the tidyverse package. [Instructions are here.](installR.html)
+* Download the data file and R script:  
+    + [Go to GitHub](https://github.com/uvastatlab/phdplus/blob/master/intro_to_R.zip), and click "Download". The folder contains a data file (albemarle_real_estate.csv) and an R script (Intro_to_R_spring_2019.R).  
+    + Unzip it and put it somwehere you can locate it on your machine.
+
+# Introduction to R
+
+## Goals for our Workshop
+
+These are the goals for today's session:
+
+- Understand the advantages and disadvantages of R
+- Know where to look for help and to learn more about R
+- Orient yourself to R and RStudio
+- Understand the basics of working with data: load data, save data, create a simple plot
+- Learn some best practices for using R scripts, using data, and projects 
+- Understand the basics of objects, functions, and indexing
+
+The intended audience is beginner-level, with no previous experience using R.
+
+*We will focus on using R for data analysis throughout this series.* 
+
+
+## Features of R
+
+* R is free!
+* R is everywhere, and has an active user base.  This is useful because you can find a lot of people in various disciplines using R in blogs, forums, Stack Overflow, etc., and you can often find help online there. 
+* R is flexible! Since R is open source, the active R user base implements new methods as libraries in R quickly. Over 10,000 packages are available. 
+* R is cool!  It is highly regarded for its:
+    + Graphical functionality. See [gplot2](https://ggplot2.tidyverse.org/), [ggplot extensions](http://www.ggplot2-exts.org/gallery/).
+    + Interactive web functionality.  See [shiny](https://shiny.rstudio.com/gallery/).
+    + Reproducible output, such as documents, presentations, and dashboards.  See [markdown](https://rmarkdown.rstudio.com/gallery.html).
+    + Easy integration with other open-source or data science applications, such as Sublime Text, Jupyter Notebooks, GitHub, etc. 
+
+
+# Orientation to R and  RStudio 
+
+We recommend that you use R with RStudio.  R is the base statistical computing environment.  RStudio is an "Interactive Development Environment" makes it easy to use R.  It does things like auto-complete, syntax highlighting, and is generally much easier to use.  
+
+After you install R and RStudio, you only need to run RStudio. 
+
+
+## Panes
+
+This is what RStudio looks like when you first open it: 
+
+![Image of RStudio at full screen](../images/R_fullscreen.png)
+
+RStudio shows four panes by default.  The two most important are the Console (bottom left) and the Script Editor (top left).
+
+
+### Console (bottom Left)
+
+![Image of RStudio console](../images/R_console.png)
+
+The console pane allows you to quickly and immediately execute R code.  You can experiment with functions here, or quickly print data for viewing. 
+
+Type next to the `>` and press Enter to execute. 
+
+**Console Practice**
+
+You can use R like a calculator.  Try typing `2+5` into the **console**.
+
+```{r calculator}
+2+8
+```
+
+Here, the plus sign is the **operator**.  Operators are symbols that represent some sort of action.  Of course, it would be silly if we only used R as a calculator.  To use R more fully, we need to understand **objects**, **functions**, and **indexing** - which we will learn about as we go.
+
+For now, think of *objects as nouns* and *functions as verbs*. 
+
+
+### Script Editor (top left)
+
+![Image of empty RStudio script editor](../images/R_script_editor.png)
+
+In contrast to the Console, which quickly runs code, the Script Editor does not automatically execute code.  The Script Editor allows you to save the code essential to your analysis.  You can re-use that code in the moment, refer back to it later, or publish it for replication.  
+
+If you have ever used Stata, the difference between the console and script editor should feel familiar.  The Console is similar to the main Stata window, while the Script Editor is similar to a .do file. 
+
+
+### Other Panes
+
+![Image of other RStudio panes, including Environment and Help](../images/R_environment_help.png)
+
+The other panes are on the right of the screen. 
+
+* **Environment** (top): Lists all currently defined objects and data sets
+* **History** (top): Lists all commands recently used or associated with a project
+* **Plots** (bottom): Graphical output goes here
+* **Help** (bottom): Find help for R packages and functions.  Don't forget you can type `?` before a function name in the console to get info in the Help section. 
+* **Files** (bottom): Shows the files available to you in your working directory
+
+
+# Working with Scripts and Data
+
+Open the R script that you downloaded and unzipped in advance of the workshop:    
+File...Open File...Navigate to the folder where you saved the workshop files and open this file: intro_to_R_spring_2019.R
+
+
+## Using an R script
+
+Use R scripts to save your work for future analysis.  This is similar to a Stata .do file or a SPSS .sps file.  Good to know: R script files end with ".R"
+
+Use lots of comments!  Do yourself a favor, and leave comments for the future version of yourself. Preface comments with a hashtag: `#`.
+
+
+## Running commands from a script
+
+To run code from a script, insert your cursor on a line with a command, and press CTRL+Enter/CMD+Enter.
+
+Or highlight some code to only run certain sections of the command, then press CTRL+Enter/CMD+Enter to run.
+
+Alternatively, use the Run button at the top of the pane to execute the current line or selection.
+
+
+# Using packages
+
+Packages contain functions, and all functions belong to packages.  For example, `read.csv` belongs to the utils package.  
+
+R comes with about 30 packages ("base R").  There are over 10,000 user-contributed packages; you can discover these packages online.  A prevalent collection of packages is the Tidyverse, which includes ggplot2, a package for making graphics. 
+
+Only install a package once. It will likely install several other packages it depends on.  You should have already installed tidyverse before the workshop.  
+
+You can install packages via point-and-click: 
+Tools...Install Packages...Enter "tidyverse" (or a different package name) then click on Install.
+
+Or you can use this command in the console: `install.packages("tidyverse")`
+
+You must load the package in any new R session where you want to use that package. Loading tidyverse will load other depdendent packages, including ggplot2.
+
+
+# View and Change Your Working Directory
+
+The working directory is where R pulls files to work with. This is where your datasets, scripts, etc. live.  It can be any folder location. (It doesn't have to be the same folder where you installed R.) 
+
+R always has a working directory set.  Get your working directory with this command in the console: `getwd()`
+
+Let's change the working directory to wherever you saved the R script and albemarle_real_estate.csv.  You can change the working directory a few ways.
+
+You can set the working directory via point-and-click: 
+Session (at the top)...Set Working Directory...Choose Directory
+
+You can also set the working directory in the console.
+
+To get your file path:
+
+Windows users: Open File Explorer, navigate to the folder you want to use, and copy the path at the top of the window. Windows users note: the default for Windows is the `\` (backslash) to separate folders in file paths, but R requires `/` (forward-slash).
+
+Mac users: Using Finder, navigate to the folder you want to use, right click on the folder, and select "Copy Path."
+
+This is an example of how I set my working directory using the console:
+`setwd("C:/Users/jah2ax/Box Sync/_R/workshops/intro_to_R_spring_2019")`
+
+Verify that you have the right directory with `getwd()`. Note that you can see the working directory listed at the top of the Console. 
+
+
+# Import data into R
+
+We will be working with Albemarle County real estate data. 
+
+* Albemarle County Office of Geographic Services (original source of data): <http://www.albemarle.org/department.asp?department=gds&relpage=3914#Parcels> 
+* We'll learn more about this data and how it was processed next week!
+
+You can import almost any kind of data into R.  Your best bet for figuring out how to import a dataset is to google "how to import [file type] into R."  You will likely have to install a package in order to do it.  For example, 'haven' is a popular package for importing Stata, SPSS, and SAS files.  Remember you can find the official documentation of packages online: https://cran.r-project.org/web/packages/haven/index.html 
+
+
+# Using R Projects
+
+Congrats for making it this far!  How do we save your R files?  What should we save?  Experts recommend relying on your R scripts.  Those are "real" - your "environment" is not.  You should do what you can to make sure Rstudio does not preserve your workspace.  
+
+Tools...Global Options...General - make sure "Restore .RData into workspace at startup" is unchecked and "Save workspace to .RData on exit" is set to Never. 
+
+![Image of Rstudio General Options](../images/rstudio-workspace.png)
+
+You can make sure that you are storing calculations, and not simply the results. You can verify by using this keystroke pattern: 
+
+Press Cmd/Ctrl + Shift + F10 to restart RStudio.
+
+Press Cmd/Ctrl + Shift + S to rerun the current script.
+
+I know I just showed you `setwd()`.  Experts don't recommend it!  Especially when you use absolute paths for your directories, using `setwd()` makes it very hard to share your data with collaborators, and eventually yourself in the future if you fiddle with your directories without updating your scripts. Recall that you couldn't just run the script I gave you because the path I gave you is only good for me and my computer, at this point in time.  Don't worry, there is a better way! 
+
+You can keep all the files associated with your project together into a R Project. 
+![Image of Rstudio Project](../images/rstudio-project.png)
+Jump back to RStudio and our R script. 
+
+# Keeping R up to date
+
+Since most people in today's session have freshly installed or updated R and RStudio, we hopefully didn't encounter any issues with old versions. But eventually, you will have to update R.
+
+Remember that at the top of the Console, you will see session info, e.g. 
+R version 3.5.2 (2018-12-20) -- "Eggshell Igloo"
+
+This tells us what version of R that RStudio is using. 
+
+You can also check the version with the version command:
+```{r version}
+version
+```
+
+After you load packages, sometimes you will see a Warning Message in red text identifying conflicts:
+
+`Warning message: package 'tidyverse' was built under R version 3.5.2`
+
+If you see a message like that, it is time to [update R](installR.html). Updating R means that you have to download and install R again: https://www.r-project.org/. Your computer will hold on to the old version of R, and it is up to you to delete it or not. RStudio will automatically recognize the new version of R.  When you install a new version of R, you have to re-install your packages. 
+
+It is a good idea to occasionally check for package updates (e.g., tidyverse): 
+Tools...Check for Package Updates.
+
+It is a good idea to occasionally check for RStudio updates: 
+Help...Check for Updates.
+
+
+# Keep learning
+* Come to the remaining sessions in our Data Science Essentials in R series
+    + Data Prep in R and Tidy Data
+    + Data Visualization with R (ggplot2)
+    + Linear Modeling with R
+    + Visualizing Models, Communicating Results in R
+    + Interactive Visualization and Web Apps in R (Shiny)
+    + Also Intro to Git and GitHub (version control)
+* Come to future [R Workshops at UVA Library](https://data.library.virginia.edu/training/)!
+* Register for the Research Data Services newsletter to be notified of upcoming workshops: <http://data.library.virginia.edu/newsletters/>
+
+
+## In-person R communities and help!
+
+For those of you looking to build community or who want one-on-one support, we are lucky to have plenty of in-person/local opportunities
+
+* Email the UVA Library's StatLab at [statlab@virginia.edu](mailto:statlab@virginia.edu) to set up a consultation.
+* UVA Health Science affiliates can take advantage of [HSL's R expertise and workshops](https://guides.hsl.virginia.edu/data). 
+* Join a local R Users Group: 
+    + [UVA R Users Group](http://www.meetup.com/UVa-R-Users-Group/)
+    + [R-Ladies Charlottesville](https://www.meetup.com/rladies-charlottesville/)
+    + [Charlottesville Data Science Meetup](https://www.meetup.com/CharlottesvilleDataScience/)
+    + New CIO for grad students: Data Science and Analytics Club.  A few other data science CIOs are on grounds.
+
+## Finding help online
+
+One great thing about R is that you can very often find an answer to your question online.
+
+* Google your error! See <http://r4ds.had.co.nz/introduction.html#getting-help-and-learning-more> for excellent suggestions on how to find help for a specific question online.
+
+Don't forget the "official" help resrouces from R/RStudio. 
+
+* Read official package documentation, see vignettes, e.g., Tidyverse <https://cran.r-project.org/package=tidyverse>
+* Use the RStudio Cheat Sheets at <https://www.rstudio.com/resources/cheatsheets/>
+* Use the RStudio Help viewer by typing `?` before a function or package
+* Check out the Keyboard Shortcuts Help under Tools in RStudio for some good tips 
+
+
+## Recommended for further learning
+
+* Grolemund. G., and Wickham, H., [*R 4 Data Science*](http://r4ds.had.co.nz/), 2017.
+    + Highly recommended!  This is what I have been using to learn, and you will see a lot of other learning communities rely on this text. 
+    + Chapters 1, 2, 4, 6, 8
+* Stat545 - Data wrangling, exploration, and analysis with R. University of British Columbia.  <http://stat545.com/>
+* Swirlstats, a package that teaches you R and statistics within R: <https://swirlstats.com/>
+* DataCamp's (free) *Intro to R* interactive tutorial: <https://www.datacamp.com/courses/free-introduction-to-r>
+    + DataCamp's advanced R tutorials require a subscription.
+*Twitter: 
+    + Explore RStudio Tips https://twitter.com/rstudiotips 
+    + Explore #rstats, #rstudioconf
+

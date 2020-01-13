@@ -1,0 +1,67 @@
+---
+title: "Phd+ Module: Data Science Essentials in R"
+author: ""
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+<br>
+
+<img src="../images/Rlogo.png" style="float:left; width:15%; margin-right: 20px">
+The [UVA Library's](https://www.library.virginia.edu) [Research Data Services Team](https://data.library.virginia.edu) and [Data Services at the Health Sciences Library](https://guides.hsl.virginia.edu/data) are partnering with UVA's [PhDPlus program](http://phdplus.virginia.edu/) to present Data Science Essentials in R, a six-session series to build data analysis, wrangling, and visualization skills.
+
+This site will host the materials for the series.
+
+<br>
+<br>
+
+## When
+* Dates: Wednesdays, 2/12, 2/19, 2/26, 3/4, 3/18, 3/25
+* Time: 2:00 - 4:00 p.m.
+* Place: TBD
+
+## What
+
+#### **Introduction to R**
+Wednesday, 2/12   
+Instructor: Jenn Huck
+
+This session provides a gentle introduction to R and RStudio. We’ll get started navigating R with RStudio, loading libraries, and importing data. We’ll do some basic data manipulation, exploration, and analysis, and begin creating plots and graphics. 
+
+- [Instruction](intror.html)   
+- [Download materials](intro_to_R.zip) (Zip file)
+
+
+#### **Exploratory Data Analysis **
+Wednesday, 2/19   
+Instructor: David Martin
+
+#### **Data preparation**
+Wednesday, 2/26   
+Instructor: David Martin
+
+#### **Data visualization**
+Wednesday, 3/4    
+Instructor: Clay Ford
+
+#### **Everyday Statistics**
+Wednesday, 3/18     
+Instructor: Marieke Jones
+
+#### **Linear Modeling**
+Wednesday, 3/25    
+Instructor: Clay Ford
+
+The workshops will assume understanding of the material in the preceding sessions and will build on a common research case, using Albemarle Real Estate Property data (though each workshop may also introduce additional examples and data). 
+
+
+## How
+Register for the series through [PhD+ pages](https://phdplus.virginia.edu/core-module/data-literacy). You may register for individual sessions; if registration exceeds the registration cap (35), preference will be given to individuals who've signed up for the entire series.
+
+<br>
+
