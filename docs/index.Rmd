@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 <br>
 
 <img src="../images/Rlogo.png" style="float:left; width:15%; margin-right: 20px">
-The [UVA Library's](https://www.library.virginia.edu) [Research Data Services Team](https://data.library.virginia.edu) and [Data Services at the Health Sciences Library](https://guides.hsl.virginia.edu/data) are partnering with UVA's [PhDPlus program](http://phdplus.virginia.edu/) to present Data Science Essentials in R, a six-session series to build data analysis, wrangling, and visualization skills.
+The [UVA Library's](https://www.library.virginia.edu) [Research Data Services](https://data.library.virginia.edu) and [Data Services at the Health Sciences Library](https://guides.hsl.virginia.edu/data) teams are partnering with UVA's [PhDPlus program](http://phdplus.virginia.edu/) to present Data Science Essentials in R, a six-session series to build data analysis, wrangling, and visualization skills.
 
 This site will host the materials for the series.
 
