@@ -5,7 +5,7 @@ Instructors, please add session materials to the /docs folder. This may include 
 Edit the index.Rmd file (in /docs) to update the main page to include links to materials. 
 
 Example markdown to add a bulleted list with links:
-edit
+
 ```
 - [Instruction](A_data_science_topic.html) 
 - [Download materials](materails.zip) (Zip file)
