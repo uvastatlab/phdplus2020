@@ -63,7 +63,7 @@ Exploring our data with graphs allows us to visualize relationships, spot unusua
 
 *From notes: a deeper dive into ggplot2, attention to publication quality graphics, possibly interactive options*
 
-#### **Everyday Statistics**
+#### **Everyday statistics**
 Wednesday, 3/18     
 Instructor: Marieke Jones
 
