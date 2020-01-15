@@ -27,7 +27,6 @@ This site will host the materials for the series.
 Register for the series through [PhDPlus pages](https://phdplus.virginia.edu/core-module/data-literacy). Upon successful completion of this series (4 out of 6 2-hour sessions), PhD students will be eligible for PhD Plus “Data Literacy in R” non-credit credentials on transcripts. These credentials are UVA-endorsed, and are a good opportunity to show demonstrated interest and knowledge in basic data science skills to prospective employers.
 
 ## Sessions
-*These are draft descriptions based on past workshop descriptions; all need updating.*
 
 #### **Introduction to R**
 Wednesday, 2/12   
