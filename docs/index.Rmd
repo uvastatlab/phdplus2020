@@ -48,6 +48,10 @@ Instructor: David Martin
 While many researchers want to jump right into developing statistical models and making predictions on their data, it important to first be able to understand the data. The process of initially understanding your data is called exploratory data analysis or EDA. EDA involves investigating your data using various methods, including graphical and numerical. This session will introduce the dplyr and ggplot packages as tools that will allow users to look for initial patterns in their data, check for missing data, and to set themselves up to move forward with statistical analysis.
 
 
+[Instructional Materials to download](phd_plus_eda.zip)
+[Exploratory Data Analysis website](phd_plus_eda.html)
+
+
 #### **Data preparation**
 [Wednesday, 2/26](https://phdplus.virginia.edu/phd-data-literacy-data-preparation)
 Instructor: David Martin
@@ -55,11 +59,19 @@ Instructor: David Martin
 Data analysis involves a large amount of preparing, cleaning, and "munging" data to facilitate downstream data analysis. This session will cover data cleaning and "tidy data," and will introduce participants to R packages that enable data manipulation, analysis, and visualization using split-apply-combine strategies. Participants will learn how to use the dplyr package in R to effectively manipulate and conditionally compute summary statistics over subsets of a "big" dataset containing many observations. The session will assume understanding of the material in the preceding sessions and will build on a common research case, using Albemarle Real Estate Property data (though each workshop may also introduce additional examples and data). 
 
 
+[Instructional Materials to download](data_prep_materials.zip)
+[Data Preparation website](phd_plus_dataprep_web.html)
+
+
 #### **Data visualization**
 [Wednesday, 3/4](https://phdplus.virginia.edu/node/2136) 
 Instructor: Clay Ford
 
 Exploring our data with graphs allows us to visualize relationships, spot unusual observations, or find unexpected patterns. In this session we introduce how to effectively use the ggplot2 package to explore and visualize data in R. With its consistent syntax and layered approach to making graphics, ggplot2 has revolutionized data visualization. What previously would have required hours of tedious programming can now be accomplished in a few lines of ggplot2 code. This workshop will introduce the logic behind ggplot2, how to use ggplot2 to explore your data, and how to customize and polish ggplot2 graphs. The session will assume understanding of the material in the preceding sessions and will build on a common research case, using Albemarle Real Estate Property data (though each workshop may also introduce additional examples and data). 
+
+
+- [Instructional Materials to download](phd_plus_data_visualization.zip)
+- [Data Preparation website](ggplot2-phdplus.html)
 
 
 #### **Everyday Statistics**
