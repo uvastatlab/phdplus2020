@@ -71,7 +71,7 @@ Exploring our data with graphs allows us to visualize relationships, spot unusua
 
 
 - [Instructional Materials to download](phd_plus_data_visualization.zip)
-- [Data Preparation website](ggplot2-phdplus.html)
+- [Data Visualization website](ggplot2-phdplus.html)
 
 
 #### **Everyday Statistics**
