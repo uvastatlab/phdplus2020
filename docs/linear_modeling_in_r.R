@@ -208,8 +208,7 @@ df <- data.frame(y, x1, x2)
 
 # We are interested in predicting home sales prices as a function of various
 # characteristics.
-sales <- read.csv("https://github.com/clayford/LinearModelingR/raw/master/real_estate_sales.csv",
-                  stringsAsFactors = FALSE)
+sales <- read.csv("https://github.com/clayford/LinearModelingR/raw/master/real_estate_sales.csv", stringsAsFactors = FALSE)
 
 # price - sale price in dollars (our response/dependent variable)
 # finsqft - finished square feet

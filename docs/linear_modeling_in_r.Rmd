@@ -323,3 +323,144 @@ df <- data.frame(y, x1, x2)
 
 ## linear modeling with Albemarle County Real Estate data
 
+Recall we (David Martin) downloaded and cleaned over 30,000 records from Albemarle County's office of Geographic Data Services. The final clean version is available as an RDS file on GitHub. The following code will download the file and read into R. Notice we have to assign the result of `readRDS` to a name. This creates an object in our workspace called "homes".
+
+```{r}
+URL <- "https://github.com/uvastatlab/phdplus2020/raw/master/data/homes_final.rds"
+homes <- readRDS(file = url(URL))
+glimpse(homes)
+```
+
+Notice we have a lot of variability in totalvalue of the home.
+
+```{r}
+summary(homes$totalvalue)
+hist(homes$totalvalue)
+# homes less than $1,000,000
+hist(homes$totalvalue[homes$totalvalue < 1e6])
+
+```
+
+
+Perhaps we could build a linear model to help us understand that variability and estimate a home's totalvalue given various predictors such as finsqft, censustract, bedrooms, lotsize, cooling, etc. Let's try that with finsqft.
+
+Below we propse that totalvalue = Intercept + slope * finsqft + noise, where noise is assumed to be drawn from a Normal distribution with mean 0 and some unknown standard deviation. Therefore we are estimating three quantities:
+
+1. Intercept
+2. slope coefficient for finsqft
+3. standard deviation of the Normal distribution with mean = 0
+
+```{r}
+m1 <- lm(totalvalue ~ finsqft, data = homes)
+summary(m1)
+coef(m1)
+sigma(m1)
+```
+
+A naive interpretation:
+- Every additional square foot adds about $276 to the total value of a home.
+
+An informal check of the "goodness" of this model is to use it to generate data and then compare that data to the original data. Below we use `simulate` to generate 50 sets of totalvalues from our model. Then we plot the density of the observed totalvalue and overlay it with the densities of the simulations. 
+
+The syntax `sim1[[i]]` extracts the ith column of the sim1 data frame.
+
+```{r}
+sim1 <- simulate(m1, nsim = 50)
+plot(density(homes$totalvalue))
+for(i in 1:50)lines(density(sim1[[i]]), col = "red")
+
+# tidyverse method
+ggplot(homes, aes(x = totalvalue)) +
+  geom_line(stat = "density") +
+  geom_line(aes(x = totalvalue, group = sim), 
+               pivot_longer(sim1, everything(), 
+                            names_to = "sim", 
+                            values_to = "totalvalue"),
+            stat = "density",
+            color = "red")
+
+```
+
+This doesn't look good.
+
+Recall our assumptions:
+
+1) the formula is a weighted sum of predictors (eg, 10 + 5*x)
+2) the noise is a random draw from a Normal distribution with mean = 0
+3) the standard deviation of the Normal distribution is constant
+
+Calling `plot` on our model object produces a series of plots to assess those last two assumptions.
+
+```{r}
+plot(m1)
+```
+
+*How to interpret plots*
+
+1. Residuals vs Fitted: should have a horizontal line with uniform and
+   symmertic scatter of points; if not, evidence that SD is not constant
+
+2. Normal Q-Q: points should lie close to diagonal line; if not, evidence that
+    noise is not drawn from N(0, SD)
+
+3. Scale-Location: should have a horizontal line with uniform scatter of
+    point; (similar to #1 but easier to detect trend in dispersion)
+
+4. Residuals vs Leverage: points outside the contour lines are influential
+    observations
+    
+Plots 1, 2, and 3 are very concerning
+
+How to address concerns?
+
+Non-constant SD can be evidence of a mispecified model or a very skewed response. Notice that our response is quite skewed:
+
+```{r}
+hist(homes$totalvalue)
+```
+
+
+We could try transforming totalvalue to a different scale. A common transformation is a log transformation. This certainly looks more symmetric but definitely has some outlying observations.
+
+```{r}
+hist(log(homes$totalvalue))
+
+```
+
+
+
+Let's try modeling log-transformed totalvalue and checking our diagnostic plots.
+
+```{r}
+m2 <- lm(log(totalvalue) ~ finsqft, data = homes)
+plot(m2)
+
+```
+
+The plots look better but there is still evidence of non-constant variance. We may need to include other predictors in our model.
+
+But first how to interpret what we have at the moment?
+```{r}
+coef(m2) %>% round(4)
+
+```
+
+
+The response is log transformed, so interpretation of coefficients changes. We
+first need to exponentiate and then interpret as multiplicative instead of
+additive effect.
+
+```{r}
+exp(coef(m2)) %>% round(4)
+
+```
+
+Naive interpretation
+ - each additional finished square foot increases price by 0.05%
+
+Let's examine the summary output in detail:
+
+```{r}
+summary(m2)
+```
+
