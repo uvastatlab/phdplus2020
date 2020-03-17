@@ -80,6 +80,9 @@ Instructor: Marieke Jones
 
 This session will provide hands-on instruction and exercises covering basic statistical analysis in R. We will cover descriptive statistics, exploratory data analysis, t-tests, ANOVA, and methods for discrete variable analysis along with hypothesis testing and assessing the assumptions of the tests. The session will assume understanding of the material in the preceding sessions and will build on a common research case, using Albemarle Real Estate Property data (though each workshop may also introduce additional examples and data).
 
+- [Instructional Materials to download](stats.zip)
+- [Stats in R website](stats_filled_script.html)
+
 
 #### **Linear Modeling**
 [Wednesday, 3/25](https://phdplus.virginia.edu/node/2146)   
