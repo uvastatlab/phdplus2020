@@ -1,7 +1,7 @@
 ---
-title: "Linear Modeling in R"
+title: "Linear Models with R"
 author: "Clay Ford"
-date: "Spring 2020"
+date: "3/25/2020"
 output: html_document
 ---
 
@@ -10,8 +10,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+This file is available for download at https://uvastatlab.github.io/phdplus2020/ under the final session **Linear Modeling**.
+
+
+<!-- Begin Video, Part 1 -->
+
+## RStudio tips
+
+* To submit a line of code, place your cursor in the line and hit 
+    + Ctrl + Enter (Win/Linux) 
+    + Cmd + Enter (Mac)
+* To enter an assignment arrow (`<-`)
+    + Alt + - (Win/Linux) 
+    + Option + - (Mac)
+
+QUESTIONS? email `jcf2d@virginia.edu`
+
 ```{r message=FALSE, warning=FALSE}
-# Load some packages we'll use today
+# Load packages we'll use today
 library(tidyverse)
 library(ggeffects)
 library(car)
@@ -21,7 +37,7 @@ library(stargazer)
 
 
 
-## linear modeling with simulated data
+## linear modeling with simulated data [Video, Part 1]
 
 
 ### Example 1: one numeric predictor
@@ -66,7 +82,7 @@ This data is the combination of two parts:
 
 What if we were given this data and told to determine the process that generated it? In other words, fill in the blanks:
 
-1. 
+1. __ + __*x
 2. rnorm(n = 25, mean = 0, sd = ____)
 
 That's basically what linear modeling is.
@@ -100,22 +116,32 @@ intercept = 11.135
 slope = 5.042
 sd = 9.7 (Residual standard error)
 
+Recall the "true" values:
+
+intercept = 10
+slope = 5
+sd = 10
+
 We could use those estimates to generate data and see if they look similar to
 our original data.
 
 ```{r}
 y2 <- 11.135 + 5.042*x + rnorm(25, 0, 9.7)
+# plot original data
 plot(x, y)
+# plot simulated data using estimates
 points(x, y2, col = "red")
 
 ```
 
+Looks similar.
 
 We could also add the original and fitted lines
 
 ```{r}
 plot(x, y)
 points(x, y2, col = "red")
+# a = intercept, b = slope
 abline(a = 10, b = 5)
 abline(mod, col = "red")
 
@@ -144,6 +170,12 @@ In real life, we DO NOT KNOW the formula of weighted sums, or even if a
 formula of weighted sums is appropriate. We also don't know if the Normality
 assumption or constant variance assumption of the noise is plausible.
 
+<!-- End Video, Part 1 -->
+
+
+<!-- Begin Video, Part 2 -->
+
+## linear modeling with simulated data [Video, Part 2]
 
 ### Example 2: one categorical and one numeric predictor
 
@@ -196,9 +228,10 @@ Let's try to recover the "true" values in the formula and the SD of the noise.
 
 To fit an interaction, use a colon.
 
+
 ```{r}
 mod2 <- lm(y ~ gender + score + gender:score, data = dat)
-# or more succinctly
+# or more concisely
 mod2 <- lm(y ~ gender * score, data = dat)
 
 ```
@@ -217,7 +250,7 @@ data. For this we can use the `simulate()` function
 
 ```{r}
 sim_y <- simulate(mod2)
-
+head(sim_y)
 ```
 
 plot both `y` and `sim.y` and compare. This time we use ggplot2.
@@ -305,7 +338,7 @@ Hence this is linear modeling:
 
 ## YOUR TURN #1
 
-```{r}
+```{r eval=FALSE}
 # submit the following code to simulate some data
 set.seed(2)
 x1 <- sample(1:5, size = 1000, replace = TRUE, 
@@ -314,14 +347,23 @@ x2 <- rnorm(n = 1000, mean = 12, sd = 2)
 noise <- rnorm(n = 1000, mean = 0, sd = 4)
 y <- 5 + 10*x1 + -4*x2 + noise
 df <- data.frame(y, x1, x2)
+head(df)
 
-# Use lm() in attempt to recover the "true" values that were used to generate y.
+# Use lm() as we did above to attempt to recover the "true" values that were
+# used to generate y.
+
+
 
 
 ```
 
 
-## linear modeling with Albemarle County Real Estate data
+<!-- End Video, Part 2 -->
+
+
+<!-- Begin Video, Part 3 -->
+
+## linear modeling with Albemarle County Real Estate data [Video, Part 3]
 
 Recall we (David Martin) downloaded and cleaned over 30,000 records from Albemarle County's office of Geographic Data Services. The final clean version is available as an RDS file on GitHub. The following code will download the file and read into R. Notice we have to assign the result of `readRDS` to a name. This creates an object in our workspace called "homes".
 
@@ -342,19 +384,23 @@ hist(homes$totalvalue[homes$totalvalue < 1e6])
 ```
 
 
-Perhaps we could build a linear model to help us understand that variability and estimate a home's totalvalue given various predictors such as finsqft, censustract, bedrooms, lotsize, cooling, etc. Let's try that with finsqft.
+Perhaps we could build a linear model to help us understand that variability and estimate the expected totalvalue of a home given various predictors such as finsqft, censustract, bedrooms, lotsize, cooling, etc. Let's try that with finsqft.
 
-Below we propse that totalvalue = Intercept + slope * finsqft + noise, where noise is assumed to be drawn from a Normal distribution with mean 0 and some unknown standard deviation. Therefore we are estimating three quantities:
+Below we propose that totalvalue = Intercept + slope * finsqft + noise, where noise is assumed to be drawn from a Normal distribution with mean 0 and some unknown standard deviation. Therefore we are estimating three quantities:
 
 1. Intercept
 2. slope coefficient for finsqft
 3. standard deviation of the Normal distribution with mean = 0
 
 ```{r}
+plot(totalvalue ~ finsqft, data = homes)
 m1 <- lm(totalvalue ~ finsqft, data = homes)
 summary(m1)
 coef(m1)
 sigma(m1)
+
+# can add the fitted line to our plot
+abline(m1, col = "blue")
 ```
 
 A naive interpretation:
@@ -369,7 +415,7 @@ sim1 <- simulate(m1, nsim = 50)
 plot(density(homes$totalvalue))
 for(i in 1:50)lines(density(sim1[[i]]), col = "red")
 
-# tidyverse method
+# tidyverse method - slower, more complicated
 ggplot(homes, aes(x = totalvalue)) +
   geom_line(stat = "density") +
   geom_line(aes(x = totalvalue, group = sim), 
@@ -391,9 +437,13 @@ Recall our assumptions:
 
 Calling `plot` on our model object produces a series of plots to assess those last two assumptions.
 
+Let's see what these plots look like when the model assumptions are satisfied. We simulated the data for `mod2` using these assumptions and then fit the correct model.
+
 ```{r}
-plot(m1)
+summary(mod2)
+plot(mod2)
 ```
+
 
 *How to interpret plots*
 
@@ -409,11 +459,19 @@ plot(m1)
 4. Residuals vs Leverage: points outside the contour lines are influential
     observations
     
+
+Let's look at the diagnostic plots for our homes model.
+
+```{r}
+plot(m1)
+```
+
+    
 Plots 1, 2, and 3 are very concerning
 
 How to address concerns?
 
-Non-constant SD can be evidence of a mispecified model or a very skewed response. Notice that our response is quite skewed:
+Non-constant SD can be evidence of a mispecified model or a very skewed response where some values are orders of magnitude larger than the rest of the data. Notice that our response is quite skewed:
 
 ```{r}
 hist(homes$totalvalue)
@@ -428,7 +486,6 @@ hist(log(homes$totalvalue))
 ```
 
 
-
 Let's try modeling log-transformed totalvalue and checking our diagnostic plots.
 
 ```{r}
@@ -439,7 +496,18 @@ plot(m2)
 
 The plots look better but there is still evidence of non-constant variance. We may need to include other predictors in our model.
 
+Let's also simulate some data from the model and compare to the observed totalvalue:
+
+```{r}
+sim_tv <- simulate(m2, nsim = 50)
+plot(density(log(homes$totalvalue)))
+for(i in 1:50)lines(density(sim_tv[[i]]), col = "red")
+```
+
+Not bad.
+
 But first how to interpret what we have at the moment?
+
 ```{r}
 coef(m2) %>% round(4)
 
@@ -458,9 +526,832 @@ exp(coef(m2)) %>% round(4)
 Naive interpretation
  - each additional finished square foot increases price by 0.05%
 
+We can (and should) look at the confidence interval of the estimates
+
+```{r}
+exp(confint(m2)) %>% round(5)
+
+```
+
+
 Let's examine the summary output in detail:
 
 ```{r}
 summary(m2)
 ```
 
+
+```
+Call:
+lm(formula = log(totalvalue) ~ finsqft, data = homes)
+
+```
+Repeat of the function call.  Useful if result is saved and then printed later.
+
+```
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.5973 -0.1611  0.0130  0.1719  3.0423  
+```
+
+Quick check of the distributional (Normal) assumptions of residuals. Median should not be far from 0. Max and Min, and 1Q and 3Q, should be roughly equal in absolute value.
+
+
+```
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 1.172e+01  4.738e-03  2474.1   <2e-16 ***
+finsqft     5.049e-04  2.077e-06   243.1   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+```
+- **Estimate**: the weight/slope/coefficient estimate
+- **Std. Error**: standard error of the weight/slope/coefficient estimate
+- **t value**: t = Estimate / Std. Error
+- **Pr(>|t|)**: Probability of seeing a |t-value| that large if estimate was really 0
+- **Signif. codes**: indicators of significance; one star means 0.01 < p < 0.05
+
+
+```
+Residual standard error: 0.3452 on 30256 degrees of freedom
+Multiple R-squared:  0.6613,	Adjusted R-squared:  0.6613 
+F-statistic: 5.908e+04 on 1 and 30256 DF,  p-value: < 2.2e-16
+
+```
+- **Residual standard error**: estimate of SD of the Normal dist'n from which the noise is assumed to be drawn
+- **degrees of freedom**: # of obs - # of estimates
+- **Multiple R-squared**: measure of model fit (0,1)
+- **Adjusted R-squared**: measure of model fit adjusted for number of parameters (0,1)
+- **F-statistic**: statistic for hypothesis test all coefficients (other than intercept) = 0
+- **p-value**: p-value of hypothesis test
+
+
+## YOUR TURN #2
+
+- Update model `m2` to include the lotsize variable, which is the size of the lot in acres on which the house is built. Call the model `m3`. 
+- What is the interpretation of lotsize? 
+- Generate diagnostic plots. What does the last plot (Residuals vs Leverage) reveal?
+- OPTIONAL: simulate data from the model (using `simulate`) and compare to the observed totalvalue. TIP: copy and paste the code used previously and update it to use `m3`
+
+```{r eval=FALSE}
+# update model m2 to include lotsize; save as m3
+m3 <- lm()
+
+# Interptation of lotsize coefficient: 
+
+
+# check diagnostics
+
+
+# What do you notice about the last plot?
+
+
+# OPTIONAL: simulate data and compare to observed data
+
+
+
+```
+
+
+<!-- End Video Part 3 -->
+
+<!-- Begin Video Part 4 -->
+
+## Categorical predictors [Video, Part 4]
+
+Let's include censustract in our model. This is a categorical variable. 
+
+Categorical predictors are added to models in the form of a _contrast_, which is a matrix of zeroes and ones. A contrast can take many forms, but the default contrast in R is the _treatment contrast_. One level of a categorical variable is designated as the baseline or reference level and all other levels are estimated in contrast to the reference level. Therefore if a categorical variable has k levels, the model will have k - 1 coefficients.
+
+```{r}
+summary(homes$censustract)
+plot(homes$censustract)
+m4 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract, data = homes)
+summary(m4)
+```
+
+Every censustract coefficient is in comparison to censustract 101. It got designated as the reference level since it came first numerically. 
+
+As a whole does censustract contribute to the model? We can't (or shouldn't) tell just by looking at all the p-values. The formal method for evaluating if a variable contributes to a model is the _partial F test_. We can easily run that in R with the `anova()` function.
+
+```{r}
+anova(m4)
+```
+
+This says that with finsqft and lotsize already in the model, censustract appears to help explain or account for the remaining variability. 
+
+Another equivalent way is to use anova to compare the new model with censustract to the previous model (m3) without censustract
+
+```{r}
+m3 <- lm(log(totalvalue) ~ finsqft + lotsize, data = homes)
+anova(m3, m4)
+```
+
+Notice the F statistic is the same.
+
+How do the diagnostic plots and simulated data look?
+
+```{r}
+plot(m4)
+
+sim_tv <- simulate(m4, nsim = 50)
+plot(density(log(homes$totalvalue)))
+for(i in 1:50)lines(density(sim_tv[[i]]), col = "red")
+
+```
+
+How to interpret?
+
+```{r}
+exp(coef(m4)) %>% round(4)
+```
+
+The censustract coefficients are in contrast to censustract 101. Therefore...
+
+- we expect the totalvalue of a home in tract 102.01 to be about 9% (0.91 - 1 = -0.09) less than a home in tract 101.
+- we expect the totalvalue of a home in tract 109.02 to be about 28% (1.28 - 1 = 0.28) more than a home in tract 101.
+- and so on
+
+Are these differences significant? Check the model summary:
+
+```{r}
+summary(m4)
+```
+
+
+Use the relevel() function to set a new reference level
+Let's set the reference level to "109.02"
+
+```{r}
+homes$censustract <- relevel(homes$censustract, ref = "109.02")
+m4 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract, data = homes)
+summary(m4)
+anova(m4)
+# reset levels back to previous order with "101" first
+homes$censustract <- factor(as.character(homes$censustract))
+
+```
+
+## YOUR TURN #3
+
+- Add the cooling variable to model `m4` and save it as `m5`. 
+- Does it help our model? 
+- What is the interpretation of the cooling coefficient?
+
+```{r eval=FALSE}
+# Add the cooling variable to model `m4` and save it as `m5`.
+m5 <- lm()
+
+# Does it help the model?
+
+# What is the interpretation of the cooling coefficient? 
+
+
+```
+
+
+<!-- End Video Part 4 -->
+
+
+<!-- Begin Video Part 5 -->
+
+## Interactions and Effect Plots [Video, Part 5]
+
+Often it isn't reasonable to expect the effect of one variable to be the same
+regardless of other variables. For example, the effect of finsqft may depend
+on censustract. Or the effect of lotsize may depend on finsqft.
+
+Use the colon to specify interactions on an individual basis.
+
+Example: finsqft:censustract
+Example: finsqft:lotsize
+
+Does the effect of finsqft depend on censustract? Does the effect of finsqft depend on lotsize?
+
+```{r}
+m6 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract + cooling + 
+           finsqft:censustract + finsqft:lotsize,
+         data = homes)
+summary(m6)
+
+```
+
+Is the interaction "significant"? In other words, does it make the model better? Does the interaction make the model better at explaining the variability in totalvalue. Again the partial F test can help us assess this.
+
+The car package's `Anova` function may be preferred in this case. It assesses an interactions contribution with _all other predictors in the model_. The base R `anova` function is sequential. It assesses the contribution of a predictor given that other predictors _before it_ are already in the model.
+
+```{r}
+anova(m6)       # Type I Sum of Squares
+car::Anova(m6)  # Type II Sum of Squares
+```
+
+Either way, the interactions seem to be warranted. 
+
+How do we interpret? This is where effect plots help. Here we use `ggpredict()`.
+
+```{r}
+plot(ggpredict(m6, terms = c("finsqft", "lotsize")))
+
+```
+
+
+We can set our own values for lotsize
+
+```{r}
+plot(ggpredict(m6, terms = c("finsqft", "lotsize[0.5, 10, 100]")))
+
+```
+
+
+
+Format the labels to show dollar amounts
+```{r}
+plot(ggpredict(m6, terms = c("finsqft", "lotsize[0.5, 10, 100]")), 
+     labels = scales::dollar)
+
+```
+
+
+The effect of finsqft decreases as lotsize gets larger (around 100 acres). Also notice most of the plot is devoted to the handful of homes over 2.5 million dollars. If we like, we can zoom in on the plot and look at totalvalues from 0 to $1,000,000. We don't see the interaction when zoomed in. The lines look roughly parallel. 
+
+```{r}
+plot(ggpredict(m6, terms = c("finsqft", "lotsize[0.5, 10, 100]")), 
+     labels = scales::dollar) +
+  coord_cartesian(ylim = c(0, 1e6))
+
+```
+
+
+Switch the order of the terms to put lotsize on the x-axis
+
+```{r}
+plot(ggpredict(m6, terms = c("lotsize[0:200]", "finsqft[1500, 3000, 4500]")))
+
+```
+
+The effect of lotsize seems more pronounced for smaller homes.
+
+Effect plots for censustract is more difficult because there are so many levels (20). Therefore we need to look at a few at a time.
+
+```{r}
+plot(ggpredict(m6, terms = c("finsqft[0:5000]", 
+                             "censustract[113.01, 113.02, 113.03]")))
+
+plot(ggpredict(m6, terms = c("finsqft[0:5000]", 
+                             "censustract[101, 107, 108, 110, 111]")))
+```
+
+
+The ggpredict() result can be saved and used as a data frame with ggplot
+
+```{r}
+eff_out <- ggpredict(m6, terms = c("finsqft[0:5000]", 
+                        "censustract[101, 107, 108, 110, 111]"))
+names(eff_out)
+eff_out <- eff_out %>% 
+  rename(`Census Tract` = group)
+ggplot(eff_out, aes(x = x, y = predicted, color = `Census Tract`)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = `Census Tract`), 
+              alpha = 1/5) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(x = "Finished Square Feet")
+
+
+```
+
+
+When should you include interactions? What kind? How many? That requires some thought and expertise in the subject.
+
+
+## YOUR TURN #4
+
+- Add an interaction for cooling and finsqft to `m6` and save as `m7`. 
+- Is the interaction significant? 
+- Create an effect plot to visualize the interaction of cooling and finsqft (or lack thereof).
+
+```{r eval=FALSE}
+# Add an interaction for cooling and finsqft to `m6` and save as `m7`.
+m7 <- lm()
+
+# Is the interaction significant? 
+
+# Create an effect plot to visualize the interaction of cooling and finsqft (or
+# lack thereof).
+
+
+
+```
+
+<!-- End Video Part 5 -->
+
+
+<!-- Begin Video Part 6 -->
+
+## Non-linear effects  [Video, Part 6]
+
+
+Often the simple assumption of a linear effect of a predictor is unrealistic.
+Fortunately there are ways to fit non-linear effects in a linear model.
+
+Let's demostrate with some simulated data
+
+```{r}
+# polynomial of degree 2
+x <- seq(from = -10, to = 10, length.out = 100)
+set.seed(3)
+y <- 1.2 + 2*x + 0.9*x^2 + rnorm(100, sd = 10)
+nl_dat <- data.frame(y, x)
+plot(x, y)
+
+```
+
+
+Fit a polynomial model with the `poly()` function
+
+```{r}
+mod4 <- lm(y ~ poly(x, 2), data = nl_dat)
+summary(mod4)
+
+```
+
+
+Notice the coefficients are quite large. That's because poly() generates
+_orthogonal_ polynomials by default. That makes for numerical stability.
+Interpretation of coefficients isn't really worth the effort.
+
+We could fit the raw polynomials as follows and sort of "recover" the true
+values.
+
+```{r}
+mod5 <- lm(y ~ poly(x, 2, raw = TRUE), data = nl_dat)
+summary(mod5)
+
+```
+
+
+Use plot() and ggpredict() to plot fitted model with data
+
+```{r}
+plot(ggpredict(mod4), add.data = TRUE)
+plot(ggpredict(mod5), add.data = TRUE)
+
+```
+
+
+The modern approach to fitting non-linear effects is to use splines instead of
+polynomials. 
+
+Instead of `poly()` we can use the `ns()` function from the splines package. ns
+stands for natural splines. The second argument is the degrees of freedom. It
+may help to think of that as the number of times the smooth line changes
+directions.
+
+```{r}
+mod6 <- lm(y ~ ns(x, df = 2), data = nl_dat)
+summary(mod6)
+plot(ggpredict(mod6), add.data = TRUE)
+
+```
+
+
+Natural splines essentially allow us to fit a series of cubic polynomials
+connected at knots located in the range of our data.
+
+The ns() function transforms our data similar to a polynomial transformation.
+
+```{r}
+# simple example data
+z <- 1:10      
+
+# classic polynomial transformation
+p2_out <- poly(z, 2, raw = TRUE)  
+p2_out
+matplot(poly(z, 2, raw = TRUE))
+cor(p2_out[,1], p2_out[,2])
+
+# orthogonal, or uncorrelated, transformation
+p2_out <- poly(z, 2)  
+p2_out
+matplot(poly(z, 2))
+cor(p2_out[,1], p2_out[,2])
+
+# natural spline transformation
+ns_out <- ns(z, 2)                
+ns_out
+matplot(ns(z, 2))
+cor(ns_out[,1], ns_out[,2])
+
+```
+
+
+Frank Harrell states in his book _Regression Model Strategies_ that 3 to 5 DF is
+almost always sufficient. His basic advice is to allocate more DF to
+variables you think are more important.
+
+How can we assess whether we need a non-linear effect? Partial residual plots
+can help. Also called term plots and component-residual plots. We'll use the
+`crPlots()` function from the car package.
+
+Partial-residual plots show the relationship between a predictor and the
+response variable given that the other predictors are also in the model.
+
+Let's fit a model with no interactions. `crPlot()` does not work for models with interactions.
+
+```{r}
+m8 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract + cooling,
+         data = homes)
+
+```
+
+
+Notice we specify the numeric variables just as we would in a model.
+
+The blue dashed line is the fitted slope.  
+The purple line is a smooth trend line.  
+
+A curving purple line indicates a non-linear effect may be justified.
+
+
+```{r}
+crPlots(m8, terms = ~ finsqft)
+crPlots(m8, terms = ~ lotsize)
+
+# use a different smoother for the smooth trend line
+crPlots(m8, terms = ~ lotsize, smooth=list(smoother=gamLine))
+
+```
+
+
+It appears both finsqft and lotsize may be affecting totalvalue in a non-linear fashion. Let's fit a non-linear effect for finsqft using a natural spline with 3 DF.
+
+```{r}
+m9 <- lm(log(totalvalue) ~ ns(finsqft, df = 3) + lotsize + censustract + cooling,
+         data = homes)
+summary(m9)
+
+```
+
+
+The coefficients are impossible to interpret. Effect plots are our only hope.
+
+```{r}
+
+plot(ggpredict(m9, terms = "finsqft"))
+
+```
+
+
+The partial-residual plot looks better
+
+```{r}
+crPlots(m9, ~ns(finsqft, df = 3))
+
+```
+
+
+
+
+## YOUR TURN #5
+
+- Update model `m9` to include a non-linear effect for lotsize using a natural spline with 5 DF and save the new model as `m10`. 
+- Generate an effect plot for the non-linear lotsize effect. 
+- Check the partial-residual plot for lotsize in model `m10`.
+
+
+```{r eval=FALSE}
+# Update model `m9` to include a non-linear effect for lotsize using a natural
+# spline with 5 DF and save the new model as `m10`.
+m10 <- lm()
+
+# Generate an effect plot for the non-linear lotsize effect.
+
+
+# Check the partial-residual plot for lotsize in model `m10`.
+
+
+```
+
+
+<!-- End Video Part 6 -->
+
+
+<!-- Begin Video Part 7 -->
+
+## Comparing models  [Video, Part 7]
+
+### Partial F test
+
+How do we determine if one model is better than another?
+
+One way is through hypothesis testing with the partial F test.
+
+NULL: two models are equally "good"   
+ALTERNATIVE: the more complex model is better  
+
+Note: the smaller model must be a subset of the larger model!
+
+We can run this test with the base R `anova()` function.
+
+Example:
+
+```{r}
+# The model from the previous exercise:
+m10 <- lm(log(totalvalue) ~ ns(finsqft, df = 3) + ns(lotsize, df = 5) + 
+            censustract + cooling,
+          data = homes) 
+
+# a more complex model with an interactionvbetween ns(finsqft, df = 3) and
+# ns(lotsize, df = 5)
+m11 <- lm(log(totalvalue) ~ ns(finsqft, df = 3) + ns(lotsize, df = 5) + 
+            censustract + cooling + 
+            ns(finsqft, df = 3):ns(lotsize, df = 5),
+          data = homes) 
+
+```
+
+
+Test that both models are equally good at modeling totalvalue. Notice that `m10` is a
+subset of `m11`
+
+```{r}
+anova(m10, m11)
+
+```
+
+
+It appears `m11` is superior to `m10` The low p-value says we
+reject the null; the bigger model appears to be better than the smaller model.
+
+
+### AIC and BIC
+
+We can also use the AIC or BIC information criteria. These are not hypothesis
+tests. We simply see which has a lower value. These values estimate the
+out-of-sample accuracy if we were to use these models to make predictions on
+new data. Simply use the `AIC` and/or `BIC` functions with the model objects. The main difference between the two is that BIC imposes a heavier penalty for models with more predictors.
+
+```{r}
+AIC(m10, m11)
+BIC(m10, m11)
+
+```
+
+
+The nice thing about AIC/BIC is that we don't need to worry about whether the
+models contain a subset of predictors. They just need to have the same
+response variable.
+
+While lower is better, sometimes it's hard to know how much lower AIC/BIC
+needs to be. If a really complex model is only slightly lower than an easier
+to understand smaller model, the smaller model may be preferable.
+
+## YOUR TURN #6
+
+
+- Fit the following three models, each with increasing levels of complexity in the splines. 
+- Compare the models using `anova`, `AIC` and `BIC`. Which is better?
+
+
+```{r eval=FALSE}
+# Fit the following three models, each with increasing levels of complexity in
+# the splines.
+mod_a <- lm(log(totalvalue) ~ ns(finsqft, df = 3) * ns(lotsize, df = 3) + 
+            censustract + cooling,
+          data = homes) 
+mod_b <- lm(log(totalvalue) ~ ns(finsqft, df = 4) * ns(lotsize, df = 4) + 
+            censustract + cooling,
+          data = homes) 
+mod_c <- lm(log(totalvalue) ~ ns(finsqft, df = 5) * ns(lotsize, df = 5) + 
+            censustract + cooling,
+          data = homes) 
+
+# Compare the models using `anova`, `AIC` and `BIC`. Which is better?
+
+
+
+```
+
+
+<!-- End Video Part 7 -->
+
+<!-- Begin Video Part 8 -->
+
+## Using a linear model  [Video, Part 8]
+
+Once we have a linear model we may want to use it to make predictions for new
+data. We can do that with the `predict()` function. Note the new data needs to
+be in a data frame.
+
+Let's say we want to use this model:
+
+```{r}
+m12 <- lm(log(totalvalue) ~ ns(finsqft, df = 5) * ns(lotsize, df = 5) + 
+            censustract * ns(finsqft, df = 5) + cooling,
+          data = homes)
+summary(m12)
+sim_tv <- simulate(m12, nsim = 50)
+plot(density(log(homes$totalvalue)))
+for(i in 1:50)lines(density(sim_tv[[i]]), col = "red")
+
+```
+
+What is the expected mean totalvalue of a home with the following characteristics:
+
+- finsqft = 2500
+- lotsize = 1
+- cooling = "Central Air"
+- censustract = "101"
+
+To answer this, first we need to enter this information into a data frame:
+
+```{r}
+newdata <- data.frame(finsqft = 2500, 
+                      lotsize = 1, 
+                      cooling = "Central Air",
+                      censustract = "101")
+
+```
+
+Next we use the `predict` function with our `newdata` data frame:
+
+```{r}
+predict(m12, newdata = newdata) %>% exp()
+
+```
+
+with 95% confidence interval
+
+```{r}
+predict(m12, newdata = newdata, interval = "confidence") %>% exp()
+
+```
+
+
+To predict a SINGLE home price, we need to set `interval = "prediction"`. Notice the predicted value is the same but the interval is much wider since we're more uncertain about the expected value of a particular house:
+
+```{r}
+predict(m12, newdata = newdata, interval = "prediction") %>% exp()
+
+
+```
+
+Now let's predict mean totalvalue for same measures but with lotsize ranging from 0
+to 10 acreas.
+
+```{r}
+newdata <- data.frame(finsqft = 2500, 
+                      lotsize = 1:10, 
+                      cooling = "Central Air",
+                      censustract = "101")
+head(newdata)
+predict(m12, newdata = newdata, interval = "confidence") %>% exp()
+
+```
+
+
+This is basically how effect plots are created.
+
+```{r}
+pred_out <- predict(m12, newdata = newdata, interval = "confidence") %>%
+  exp() %>% 
+  as.data.frame() %>% 
+  mutate(lotsize = 1:10)
+
+```
+
+
+Now create the effect plot "by hand" with ggplot:
+
+```{r}
+ggplot(pred_out, aes(x = lotsize, y = fit)) +
+  geom_line() +
+  geom_ribbon(mapping = aes(ymin = lwr, ymax = upr), alpha = 1/5) 
+
+```
+
+
+Here's the same plot with ggpredict; use `condition` argument to set other predictors to
+specific values.
+
+```{r}
+eff_out <- ggpredict(m12, terms = "lotsize[1:10]", 
+                    condition = c(finsqft = 2500, 
+                                  cooling = "Central Air",
+                                  censustract = "101"))
+plot(eff_out)
+
+```
+
+
+## YOUR TURN #7
+
+Modify the code below to produce an effect plot for finsqft (with values set to 1500, 2000, 2500, 3000) and lotsize set to 0.5 acre. Leave cooling and censustract as is.
+
+```{r eval=FALSE}
+eff_out <- ggpredict(m12, terms = "lotsize[1:10]", 
+                    condition = c(finsqft = 2500, 
+                                  cooling = "Central Air",
+                                  censustract = "101"))
+plot(eff_out)
+
+
+
+```
+
+<!-- End Video Part 8 -->
+
+## Communicating modeling results 
+
+The stargazer package can produce regression tables for articles and
+presentations. It can output tables in html, text or LaTeX. Below we
+demonstrate with text.
+
+The basic usage is as follows
+
+```{r}
+stargazer(m2, m3, type = "text", title = "Modeling Results")
+
+```
+
+Since our dependent variable has been log transformed, we may want to exponentiate the coefficients. We can do that with the `apply.coef = exp` argument.
+
+```{r}
+stargazer(m2, m3, type = "text", title = "Modeling Results",
+          apply.coef = exp)
+
+```
+
+
+The style argument allows you to create tables according to styles preferred
+by various journals. See `?stargazer`
+
+"ajps" = American Journal of Political Science
+```{r}
+stargazer(m2, m3, 
+          type = "text", 
+          title = "Modeling Results",
+          apply.coef = exp,
+          style = "ajps")
+
+```
+
+
+# "asr"	American Sociological Review
+```{r}
+stargazer(m2, m3, 
+          type = "text", 
+          title = "Modeling Results",
+          apply.coef = exp,
+          style = "asr")
+
+```
+
+
+We can set the variable names with the `covariate.labels` argument.
+
+```{r}
+stargazer(m2, m3, 
+          type = "text", 
+          title = "Modeling Results",
+          style = "ajps", 
+          apply.coef = exp,
+          covariate.labels = c("Finished Sq Ft",
+                               "Lot Size", 
+                               "Intercept"))
+
+```
+
+
+We can omit certain model statistics. Below we omit the F statistic. Notice we also we set the name of the dependent variable to display as "Total Value"
+
+```{r}
+stargazer(m2, m3, 
+          type = "text", 
+          title = "Modeling Results",
+          style = "ajps", 
+          covariate.labels = c("Finished Sq Ft",
+                               "Lot Size",
+                               "Intercept"),
+          omit.stat = "f",
+          apply.coef = exp,
+          dep.var.labels = "Total Value")
+
+
+```
+
+
+Again, see `?stargazer` for many more options.
+
+## References
+
+* Faraway, J. (2005). _Linear Models in R_. London: Chapman & Hall.
+
+* Fox, J. (2002). _A R and S-Plus Companion to Applied Regression_. London: Sage.
+
+* Harrell, F. (2015). _Regression Modeling Strategies_ (2nd ed.). New York: Springer.
+
+* Kutner, M., et al. (2005). _Applied Linear Statistical Models_ (5th ed.). New York: McGraw-Hill.
+
+* Maindonald J., Braun, J.W. (2010). _Data Analysis and Graphics Using R_ (3rd ed.). Cambridge: Cambridge Univ Press.

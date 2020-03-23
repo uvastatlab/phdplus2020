@@ -1,0 +1,130 @@
+## YOUR TURN #2
+
+Update model `m2` to include the lotisze variable, which is the size of the lot in acres on which the house is built. Call the model `m3`. What is the interpretation of lotsize? Generate diagnostic plots. What does the last plot (Residuals vs Leverage) reveal?
+
+Challenge: simulate data from the model and compare to the observed totalvalue. 
+
+```{r}
+# enter your code below
+m3 <- lm(log(totalvalue) ~ finsqft + lotsize, data = homes)
+summary(m3)
+exp(coef(m3)) %>% round(4)
+
+# Intreptation of lotsize coefficient: Every additional acre increases home value by about 0.35%.
+
+# check diagnostics
+plot(m3)
+
+# simulate data
+sim_tv <- simulate(m3, nsim = 50)
+plot(density(log(homes$totalvalue)))
+for(i in 1:50)lines(density(sim_tv[[i]]), col = "red")
+
+homes[4624,]
+
+m3 <- lm(log(totalvalue) ~ finsqft + lotsize, data = homes, subset = -4624)
+summary(m3)
+
+
+```
+
+## YOUR TURN #3
+
+Add cooling to our model and save it as `m5`. Does it help our model? What is the interpretation of the coefficient?
+
+```{r}
+m5 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract + cooling, data = homes)
+summary(m5)
+anova(m5)
+
+exp(coef(m5)) %>% round(4)
+exp(confint(m5)) %>% round(4)
+
+# totalvalue of home with central air is expected to be about 31% to 34% higher than a home without central air.
+
+```
+
+### YOUR TURN #4
+
+- Add an interaction for cooling and finsqft to `m6` and save as `m7`. 
+- Is the interaction significant? 
+- Create an effect plot to visualize the interaction of cooling and finsqft (or lack thereof).
+
+```{r}
+m7 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract + 
+    cooling + finsqft:censustract + finsqft:lotsize + finsqft:cooling, 
+    data = homes)
+summary(m7)
+
+plot(ggpredict(m7, terms = c("finsqft", "cooling")))
+
+
+```
+
+
+
+### YOUR TURN #5
+
+Update `m9` to include a non-linear effect for lotsize using a natural spline with 3 DF and save the new model as `m10`. Generate an effect plot for the non-linear lot-size effect. Check the partial-residual plot for lotsize in model `m10`.
+
+```{r}
+
+m10 <- lm(log(totalvalue) ~ ns(finsqft, df = 3) + ns(lotsize, df = 5) + 
+            censustract + cooling,
+          data = homes) 
+
+summary(m10)
+
+plot(ggpredict(m10, terms = ~ns(lotsize, df = 5)))
+
+crPlots(m10, ~ns(lotsize, df = 5), smooth=list(smoother=gamLine))
+
+```
+
+
+## YOUR TURN #6
+
+
+Fit the following three models, each with increasing levels of complexity in the splines. Which one is "better" as indicated by `anova`, `AIC` and `BIC`?
+
+```{r}
+# Fit the following three models, each with increasing levels of complexity in
+# the splines.
+mod_a <- lm(log(totalvalue) ~ ns(finsqft, df = 3) * ns(lotsize, df = 3) + 
+            censustract + cooling,
+          data = homes) 
+mod_b <- lm(log(totalvalue) ~ ns(finsqft, df = 4) * ns(lotsize, df = 4) + 
+            censustract + cooling,
+          data = homes) 
+mod_c <- lm(log(totalvalue) ~ ns(finsqft, df = 5) * ns(lotsize, df = 5) + 
+            censustract + cooling,
+          data = homes) 
+
+# Compare the models using `anova`, `AIC` and `BIC`. Which is better?
+AIC(mod_a, mod_b, mod_c)
+BIC(mod_a, mod_b, mod_c)
+anova(mod_a, mod_b, mod_c)
+
+```
+
+
+
+## YOUR TURN #7
+
+Modify the code below to produce an effect plot for finsqft (with values set to 1500, 2000, 2500, 3000) and lotsize set to 0.5 acre. Leave cooling and censustract as is.
+
+```{r}
+eff_out <- ggpredict(m12, terms = "lotsize[1:10]", 
+                    condition = c(finsqft = 2500, 
+                                  cooling = "Central Air",
+                                  censustract = "101"))
+plot(eff_out)
+
+eff_out <- ggpredict(m12, terms = "finsqft[1500, 2000, 2500, 3000]", 
+                    condition = c(lotsize = 0.5, 
+                                  cooling = "Central Air",
+                                  censustract = "101"))
+plot(eff_out)
+
+```
+

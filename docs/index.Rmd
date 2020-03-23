@@ -90,3 +90,6 @@ Instructor: Clay Ford
 
 The linear model is one of the most commonly-used statistical models. Also called the regression model or the ordinary linear regression, linear modeling is the foundation for more complex general linear models like logit or count models, mixed-effects models, and structural equation models. So it’s a good model to understand. This session will cover how to use R to fit and analyze linear models. We’ll talk about interpretation of model output and checking model assumptions. We’ll also explore dummy variables, interactions, and variable transformations. The session will assume understanding of the material in the preceding sessions and will build on a common research case, using Albemarle Real Estate Property data (though each workshop may also introduce additional examples and data). 
 
+- [Instructional Materials to download](linear_modeling_in_r.zip)
+- [Linear Modeling with R website](linear_modeling_in_r.html)
+- [Linear Modeling with R video playlist](https://www.youtube.com/playlist?list=PL_P5_Bkw1d30BWsAvCL5vKwynQ3k4XCqm) 
