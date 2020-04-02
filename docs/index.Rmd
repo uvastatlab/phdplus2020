@@ -93,3 +93,12 @@ The linear model is one of the most commonly-used statistical models. Also calle
 - [Instructional Materials to download](linear_modeling_in_r.zip)
 - [Linear Modeling with R website](linear_modeling_in_r.html)
 - [Linear Modeling with R video playlist](https://www.youtube.com/playlist?list=PL_P5_Bkw1d30BWsAvCL5vKwynQ3k4XCqm) 
+- [Answers to YOUR TURN exercises](lm_answers.txt)
+
+<br>
+<br>
+  
+    
+    
+      
+

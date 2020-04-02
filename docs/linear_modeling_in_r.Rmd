@@ -1045,13 +1045,15 @@ crPlots(m9, ~ns(finsqft, df = 3))
 ```{r eval=FALSE}
 # Update model `m9` to include a non-linear effect for lotsize using a natural
 # spline with 5 DF and save the new model as `m10`.
-m10 <- lm()
+m10 <- lm(log(totalvalue) ~ ns(finsqft, df = 3) + ns(lotsize, df = 5) + 
+            censustract + cooling,
+          data = homes) 
 
 # Generate an effect plot for the non-linear lotsize effect.
-
+plot(ggpredict(m10, terms = ~ns(lotsize, df = 5)))
 
 # Check the partial-residual plot for lotsize in model `m10`.
-
+crPlots(m10, ~ns(lotsize, df = 5), smooth=list(smoother=gamLine))
 
 ```
 
