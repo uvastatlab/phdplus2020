@@ -1,6 +1,32 @@
+## YOUR TURN #1
+
+```{r}
+# submit the following code to simulate some data
+set.seed(2)
+x1 <- sample(1:5, size = 1000, replace = TRUE, 
+             prob = c(0.1,0.2,0.3,0.3,0.1))
+x2 <- rnorm(n = 1000, mean = 12, sd = 2)
+noise <- rnorm(n = 1000, mean = 0, sd = 4)
+y <- 5 + 10*x1 + -4*x2 + noise
+df <- data.frame(y, x1, x2)
+head(df)
+
+# Use lm() as we did above to attempt to recover the "true" values that were
+# used to generate y.
+
+m <- lm(y ~ x1 + x2, data = df)
+summary(m)
+
+# No interaction when we simulated y, so just use x1 + x2, not x1 * x2.
+
+```
+
+
+
+
 ## YOUR TURN #2
 
-Update model `m2` to include the lotisze variable, which is the size of the lot in acres on which the house is built. Call the model `m3`. What is the interpretation of lotsize? Generate diagnostic plots. What does the last plot (Residuals vs Leverage) reveal?
+Update model `m2` to include the lotsize variable, which is the size of the lot in acres on which the house is built. Call the model `m3`. What is the interpretation of lotsize? Generate diagnostic plots. What does the last plot (Residuals vs Leverage) reveal?
 
 Challenge: simulate data from the model and compare to the observed totalvalue. 
 
@@ -15,13 +41,16 @@ exp(coef(m3)) %>% round(4)
 # check diagnostics
 plot(m3)
 
+# row 4624 appears to be an influential observation. It is a huge home on a huge
+# lot with a very high value!
+homes[4624, c("totalvalue", "finsqft", "lotsize")]
+
 # simulate data
 sim_tv <- simulate(m3, nsim = 50)
 plot(density(log(homes$totalvalue)))
 for(i in 1:50)lines(density(sim_tv[[i]]), col = "red")
 
-homes[4624,]
-
+# if we like, we can fit the model without row 4624 as follows:
 m3 <- lm(log(totalvalue) ~ finsqft + lotsize, data = homes, subset = -4624)
 summary(m3)
 
@@ -46,17 +75,24 @@ exp(confint(m5)) %>% round(4)
 
 ### YOUR TURN #4
 
-- Add an interaction for cooling and finsqft to `m6` and save as `m7`. 
-- Is the interaction significant? 
-- Create an effect plot to visualize the interaction of cooling and finsqft (or lack thereof).
-
 ```{r}
+# Add an interaction for cooling and finsqft to `m6` and save as `m7`.
 m7 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract + 
     cooling + finsqft:censustract + finsqft:lotsize + finsqft:cooling, 
     data = homes)
+
+# Is the interaction significant? 
 summary(m7)
 
+# Yes, it seems significant
+
+# Create an effect plot to visualize the interaction of cooling and finsqft (or
+# lack thereof).
 plot(ggpredict(m7, terms = c("finsqft", "cooling")))
+
+# The interaction is significant but extremely weak. Notice how the lines look almost parallel.
+
+plot(ggpredict(m7, terms = c("finsqft[1000,2000,3000,4000,5000,6000]", "cooling")))
 
 
 ```
@@ -65,18 +101,17 @@ plot(ggpredict(m7, terms = c("finsqft", "cooling")))
 
 ### YOUR TURN #5
 
-Update `m9` to include a non-linear effect for lotsize using a natural spline with 3 DF and save the new model as `m10`. Generate an effect plot for the non-linear lot-size effect. Check the partial-residual plot for lotsize in model `m10`.
-
-```{r}
-
+```{r eval=FALSE}
+# Update model `m9` to include a non-linear effect for lotsize using a natural
+# spline with 5 DF and save the new model as `m10`.
 m10 <- lm(log(totalvalue) ~ ns(finsqft, df = 3) + ns(lotsize, df = 5) + 
             censustract + cooling,
           data = homes) 
 
-summary(m10)
-
+# Generate an effect plot for the non-linear lotsize effect.
 plot(ggpredict(m10, terms = ~ns(lotsize, df = 5)))
 
+# Check the partial-residual plot for lotsize in model `m10`.
 crPlots(m10, ~ns(lotsize, df = 5), smooth=list(smoother=gamLine))
 
 ```
@@ -104,6 +139,8 @@ mod_c <- lm(log(totalvalue) ~ ns(finsqft, df = 5) * ns(lotsize, df = 5) +
 AIC(mod_a, mod_b, mod_c)
 BIC(mod_a, mod_b, mod_c)
 anova(mod_a, mod_b, mod_c)
+
+# mod_c appears to be better despite its complexity.
 
 ```
 

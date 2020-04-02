@@ -352,8 +352,10 @@ head(df)
 # Use lm() as we did above to attempt to recover the "true" values that were
 # used to generate y.
 
+m <- lm(y ~ x1 + x2, data = df)
+summary(m)
 
-
+# No interaction when we simulated y, so just use x1 + x2, not x1 * x2.
 
 ```
 
@@ -595,19 +597,28 @@ F-statistic: 5.908e+04 on 1 and 30256 DF,  p-value: < 2.2e-16
 - OPTIONAL: simulate data from the model (using `simulate`) and compare to the observed totalvalue. TIP: copy and paste the code used previously and update it to use `m3`
 
 ```{r eval=FALSE}
-# update model m2 to include lotsize; save as m3
-m3 <- lm()
+# enter your code below
+m3 <- lm(log(totalvalue) ~ finsqft + lotsize, data = homes)
+summary(m3)
+exp(coef(m3)) %>% round(4)
 
-# Interptation of lotsize coefficient: 
-
+# Intreptation of lotsize coefficient: Every additional acre increases home value by about 0.35%.
 
 # check diagnostics
+plot(m3)
 
+# row 4624 appears to be an influential observation. It is a huge home on a huge
+# lot with a very high value!
+homes[4624, c("totalvalue", "finsqft", "lotsize")]
 
-# What do you notice about the last plot?
+# simulate data
+sim_tv <- simulate(m3, nsim = 50)
+plot(density(log(homes$totalvalue)))
+for(i in 1:50)lines(density(sim_tv[[i]]), col = "red")
 
-
-# OPTIONAL: simulate data and compare to observed data
+# if we like, we can fit the model without row 4624 as follows:
+m3 <- lm(log(totalvalue) ~ finsqft + lotsize, data = homes, subset = -4624)
+summary(m3)
 
 
 
@@ -701,11 +712,14 @@ homes$censustract <- factor(as.character(homes$censustract))
 
 ```{r eval=FALSE}
 # Add the cooling variable to model `m4` and save it as `m5`.
-m5 <- lm()
+m5 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract + cooling, data = homes)
+summary(m5)
+anova(m5)
 
-# Does it help the model?
+exp(coef(m5)) %>% round(4)
+exp(confint(m5)) %>% round(4)
 
-# What is the interpretation of the cooling coefficient? 
+# totalvalue of home with central air is expected to be about 31% to 34% higher than a home without central air.
 
 
 ```
@@ -833,14 +847,22 @@ When should you include interactions? What kind? How many? That requires some th
 
 ```{r eval=FALSE}
 # Add an interaction for cooling and finsqft to `m6` and save as `m7`.
-m7 <- lm()
+m7 <- lm(log(totalvalue) ~ finsqft + lotsize + censustract + 
+    cooling + finsqft:censustract + finsqft:lotsize + finsqft:cooling, 
+    data = homes)
 
 # Is the interaction significant? 
+summary(m7)
+
+# Yes, it seems significant
 
 # Create an effect plot to visualize the interaction of cooling and finsqft (or
 # lack thereof).
+plot(ggpredict(m7, terms = c("finsqft", "cooling")))
 
+# The interaction is significant but extremely weak. Notice how the lines look almost parallel.
 
+plot(ggpredict(m7, terms = c("finsqft[1000,2000,3000,4000,5000,6000]", "cooling")))
 
 ```
 
